@@ -27,6 +27,7 @@ class Visit extends Model
         'preferred_end_time',
         'visit_purpose',
         'special_requirements',
+        'other_activities',
         'status',
         'assigned_admin_id',
         'approved_by',

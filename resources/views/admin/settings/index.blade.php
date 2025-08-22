@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Configuración de Cuenta - Sistema de Visitas')
+@section('title', 'Mi Cuenta - Sistema de Visitas')
 
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">
         <i class="fas fa-user-cog text-primary me-2"></i>
-        Configuración de Cuenta
+        Mi Cuenta
     </h1>
 </div>
 
@@ -96,15 +96,15 @@
                         
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="institution" class="form-label">
+                                <label for="institution_name" class="form-label">
                                     <i class="fas fa-building me-1"></i>Institución
                                 </label>
                                 <input type="text" 
-                                       class="form-control @error('institution') is-invalid @enderror" 
-                                       id="institution" 
-                                       name="institution" 
-                                       value="{{ old('institution', $user->institution) }}">
-                                @error('institution')
+                                       class="form-control @error('institution_name') is-invalid @enderror" 
+                                       id="institution_name" 
+                                       name="institution_name" 
+                                       value="{{ old('institution_name', $user->institution_name) }}">
+                                @error('institution_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -220,7 +220,23 @@
                 <div class="row">
                     <div class="col-6">
                         <strong>Rol:</strong><br>
-                        <span class="badge bg-primary">{{ $user->getPrimaryRole()->name ?? 'Super Administrador' }}</span>
+                        @if($user->getPrimaryRole())
+                            @switch($user->getPrimaryRole()->name)
+                                @case('superadmin')
+                                    <span class="badge bg-danger">👑 Super Administrador</span>
+                                    @break
+                                @case('administrador')
+                                    <span class="badge bg-warning text-dark">🛡️ Administrador</span>
+                                    @break
+                                @case('visitante')
+                                    <span class="badge bg-primary">👤 Visitante</span>
+                                    @break
+                                @default
+                                    <span class="badge bg-secondary">{{ ucfirst($user->getPrimaryRole()->name) }}</span>
+                            @endswitch
+                        @else
+                            <span class="badge bg-secondary">Sin rol asignado</span>
+                        @endif
                     </div>
                     <div class="col-6">
                         <strong>Estado:</strong><br>

@@ -11,13 +11,13 @@ use App\Helpers\SettingsHelper;
 class SettingsController extends Controller
 {
     /**
-     * Verificar permisos de SuperAdmin y Administrador
+     * Verificar que el usuario esté autenticado
      */
-    private function checkAdminPermissions()
+    private function checkAuth()
     {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect()->route('dashboard')
-                ->with('error', 'No tienes permisos para acceder a esta sección.');
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Debes iniciar sesión para acceder a esta sección.');
         }
         return null;
     }
@@ -27,9 +27,9 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        $permissionCheck = $this->checkAdminPermissions();
-        if ($permissionCheck) {
-            return $permissionCheck;
+        $authCheck = $this->checkAuth();
+        if ($authCheck) {
+            return $authCheck;
         }
 
         $user = auth()->user();
@@ -42,9 +42,9 @@ class SettingsController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $permissionCheck = $this->checkAdminPermissions();
-        if ($permissionCheck) {
-            return $permissionCheck;
+        $authCheck = $this->checkAuth();
+        if ($authCheck) {
+            return $authCheck;
         }
 
         $user = auth()->user();
@@ -53,14 +53,14 @@ class SettingsController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
-            'institution' => 'nullable|string|max:255',
+            'institution_name' => 'nullable|string|max:255',
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'institution' => $request->institution,
+            'institution_name' => $request->institution_name,
         ]);
 
         return redirect()->route('admin.settings.index')
@@ -72,9 +72,9 @@ class SettingsController extends Controller
      */
     public function changePassword(Request $request)
     {
-        $permissionCheck = $this->checkAdminPermissions();
-        if ($permissionCheck) {
-            return $permissionCheck;
+        $authCheck = $this->checkAuth();
+        if ($authCheck) {
+            return $authCheck;
         }
 
         $request->validate([
@@ -93,8 +93,4 @@ class SettingsController extends Controller
         return redirect()->route('admin.settings.index')
             ->with('success', 'Contraseña cambiada exitosamente.');
     }
-
-
-
-
 }

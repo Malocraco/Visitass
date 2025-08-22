@@ -12,17 +12,11 @@
                         <i class="fas fa-eye me-2"></i>
                         Detalles de la Solicitud de Visita
                     </h4>
-                    <div>
-                        <a href="{{ route('visits.my-requests') }}" class="btn btn-light me-2">
+                    <div class="ms-auto">
+                        <a href="{{ route('visits.my-requests') }}" class="btn btn-light">
                             <i class="fas fa-arrow-left me-2"></i>
                             Volver
                         </a>
-                        @if($visit->status === 'pending')
-                            <button class="btn btn-danger" onclick="cancelRequest()">
-                                <i class="fas fa-times me-2"></i>
-                                Cancelar
-                            </button>
-                        @endif
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -83,15 +77,11 @@
                                 <div class="card-body">
                                     <div class="row mb-2">
                                         <div class="col-4"><strong>Fecha:</strong></div>
-                                        <div class="col-8">{{ \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y') }}</div>
+                                        <div class="col-8">{{ \Carbon\Carbon::parse($visit->preferred_date)->format('d/m/Y') }}</div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-4"><strong>Hora:</strong></div>
-                                        <div class="col-8">{{ $visit->visit_time }}</div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Grupo:</strong></div>
-                                        <div class="col-8">{{ $visit->group_size }} personas</div>
+                                        <div class="col-8">{{ \Carbon\Carbon::parse($visit->preferred_start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($visit->preferred_end_time)->format('H:i') }}</div>
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-4"><strong>Propósito:</strong></div>
@@ -99,7 +89,7 @@
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-4"><strong>Solicitado:</strong></div>
-                                        <div class="col-8">{{ \Carbon\Carbon::parse($visit->requested_at)->format('d/m/Y H:i') }}</div>
+                                        <div class="col-8">{{ \Carbon\Carbon::parse($visit->created_at)->format('d/m/Y H:i') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -171,59 +161,33 @@
                             </div>
                         </div>
 
-                        <!-- Información de Transporte -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-car me-2"></i>
-                                        Información de Transporte
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Método:</strong></div>
-                                        <div class="col-8">{{ ucfirst(str_replace('_', ' ', $visit->transportation_method)) }}</div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Llegada:</strong></div>
-                                        <div class="col-8">{{ $visit->arrival_time }}</div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Salida:</strong></div>
-                                        <div class="col-8">{{ $visit->departure_time }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Requisitos Especiales -->
-                        @if($visit->special_requirements || $visit->dietary_restrictions || $visit->accessibility_needs)
+                        <!-- Servicios Adicionales -->
+                        @if($visit->restaurant_service)
                             <div class="col-md-6 mb-4">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light">
                                         <h6 class="mb-0">
-                                            <i class="fas fa-star me-2"></i>
-                                            Requisitos Especiales
+                                            <i class="fas fa-utensils me-2"></i>
+                                            Servicios Adicionales
                                         </h6>
                                     </div>
                                     <div class="card-body">
-                                        @if($visit->special_requirements)
-                                            <div class="mb-3">
-                                                <strong>Requisitos Especiales:</strong>
-                                                <p class="mb-0">{{ $visit->special_requirements }}</p>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Restaurante:</strong></div>
+                                            <div class="col-8">
+                                                <span class="badge bg-success">Solicitado</span>
+                                            </div>
+                                        </div>
+                                        @if($visit->restaurant_participants)
+                                            <div class="row mb-2">
+                                                <div class="col-4"><strong>Personas:</strong></div>
+                                                <div class="col-8">{{ $visit->restaurant_participants }} personas</div>
                                             </div>
                                         @endif
-                                        @if($visit->dietary_restrictions)
-                                            <div class="mb-3">
-                                                <strong>Restricciones Alimentarias:</strong>
-                                                <p class="mb-0">{{ $visit->dietary_restrictions }}</p>
-                                            </div>
-                                        @endif
-                                        @if($visit->accessibility_needs)
-                                            <div class="mb-3">
-                                                <strong>Necesidades de Accesibilidad:</strong>
-                                                <p class="mb-0">{{ $visit->accessibility_needs }}</p>
+                                        @if($visit->restaurant_notes)
+                                            <div class="row mb-2">
+                                                <div class="col-4"><strong>Notas:</strong></div>
+                                                <div class="col-8">{{ $visit->restaurant_notes }}</div>
                                             </div>
                                         @endif
                                     </div>
@@ -231,63 +195,65 @@
                             </div>
                         @endif
 
-                        <!-- Contacto de Emergencia -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>
-                                        Contacto de Emergencia
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Nombre:</strong></div>
-                                        <div class="col-8">{{ $visit->emergency_contact_name }}</div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Teléfono:</strong></div>
-                                        <div class="col-8">{{ $visit->emergency_contact_phone }}</div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-4"><strong>Relación:</strong></div>
-                                        <div class="col-8">{{ $visit->emergency_contact_relationship }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Historial de la Solicitud -->
-                    @if($visit->logs->count() > 0)
-                        <div class="row">
-                            <div class="col-12">
+                        <!-- Requisitos y Actividades -->
+                        @if($visit->special_requirements || $visit->other_activities)
+                            <div class="col-md-6 mb-4">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light">
                                         <h6 class="mb-0">
-                                            <i class="fas fa-history me-2"></i>
-                                            Historial de la Solicitud
+                                            <i class="fas fa-star me-2"></i>
+                                            Requisitos y Actividades
                                         </h6>
                                     </div>
                                     <div class="card-body">
-                                        <div class="timeline">
-                                            @foreach($visit->logs->sortBy('created_at') as $log)
-                                                <div class="timeline-item">
-                                                    <div class="timeline-marker"></div>
-                                                    <div class="timeline-content">
-                                                        <h6 class="mb-1">{{ $log->description }}</h6>
-                                                        <small class="text-muted">
-                                                            {{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y H:i') }}
-                                                        </small>
-                                                    </div>
+                                        @if($visit->special_requirements)
+                                            <div class="mb-3">
+                                                <strong>Requisitos Obligatorios:</strong>
+                                                <div class="mt-2">
+                                                    @php
+                                                        // Dividir los requisitos por actividad
+                                                        $requirements = explode('📋', $visit->special_requirements);
+                                                        array_shift($requirements); // Remover el primer elemento vacío
+                                                    @endphp
+                                                    
+                                                    @foreach($requirements as $requirement)
+                                                        @php
+                                                            $lines = explode("\n", trim($requirement));
+                                                            $activityName = trim($lines[0], ':');
+                                                            $activityRequirements = array_slice($lines, 1);
+                                                        @endphp
+                                                        
+                                                        <div class="requirement-card mb-3">
+                                                            <div class="requirement-header">
+                                                                <i class="fas fa-clipboard-list me-2"></i>
+                                                                {{ $activityName }}
+                                                            </div>
+                                                            <div class="requirement-body">
+                                                                <ul class="mb-0">
+                                                                    @foreach($activityRequirements as $req)
+                                                                        @if(trim($req) !== '')
+                                                                            <li>{{ trim($req, '• ') }}</li>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
                                                 </div>
-                                            @endforeach
-                                        </div>
+                                            </div>
+                                        @endif
+                                        
+                                        @if($visit->other_activities)
+                                            <div class="mb-3">
+                                                <strong>Otras Actividades:</strong>
+                                                <p class="mb-0 mt-2">{{ $visit->other_activities }}</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -295,36 +261,89 @@
 </div>
 
 <style>
-.timeline {
+/* Estilos para los cuadros de requisitos obligatorios */
+.requirement-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.requirement-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.requirement-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.requirement-header i {
+    font-size: 18px;
+}
+
+.requirement-body {
+    padding: 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #495057;
+}
+
+.requirement-body ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.requirement-body li {
+    margin-bottom: 8px;
     position: relative;
-    padding-left: 30px;
 }
 
-.timeline-item {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.timeline-marker {
+.requirement-body li:before {
+    content: "•";
+    color: #007bff;
+    font-weight: bold;
     position: absolute;
-    left: -35px;
-    top: 5px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #007bff;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px #007bff;
+    left: -15px;
 }
 
-.timeline-item:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    left: -30px;
-    top: 15px;
-    width: 2px;
-    height: calc(100% + 5px);
-    background-color: #e9ecef;
+/* Animación de entrada para los cuadros */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.requirement-card {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Responsive para los cuadros */
+@media (max-width: 768px) {
+    .requirement-header {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .requirement-body {
+        padding: 15px;
+        font-size: 13px;
+    }
 }
 </style>
 @endsection

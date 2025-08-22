@@ -55,8 +55,8 @@
                     
                     <div class="mb-3">
                         <strong>Fecha de Visita:</strong><br>
-                        <i class="fas fa-calendar me-1"></i>{{ $visit->visit_date->format('d/m/Y') }}<br>
-                        <i class="fas fa-clock me-1"></i>{{ $visit->visit_time }}
+                        <i class="fas fa-calendar me-1"></i>{{ $visit->preferred_date->format('d/m/Y') }}<br>
+                        <i class="fas fa-clock me-1"></i>{{ $visit->preferred_start_time->format('H:i') }} - {{ $visit->preferred_end_time->format('H:i') }}
                     </div>
                     
                     <div class="mb-3">
@@ -102,7 +102,7 @@
                         <div class="modal-body">
                             <p><strong>¿Estás seguro de que deseas aprobar esta visita?</strong></p>
                             <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                            <p><strong>Fecha:</strong> {{ $visit->visit_date->format('d/m/Y') }}</p>
+                            <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
                             
                             <div class="mb-3">
                                 <label for="admin_notes" class="form-label">Notas del Administrador (opcional):</label>
@@ -135,7 +135,7 @@
                         <div class="modal-body">
                             <p><strong>¿Estás seguro de que deseas rechazar esta visita?</strong></p>
                             <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                            <p><strong>Fecha:</strong> {{ $visit->visit_date->format('d/m/Y') }}</p>
+                            <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
                             
                             <div class="mb-3">
                                 <label for="rejection_reason" class="form-label">Motivo del Rechazo: <span class="text-danger">*</span></label>

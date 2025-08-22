@@ -12,10 +12,6 @@
                         <i class="fas fa-list me-2"></i>
                         Mis Solicitudes de Visita
                     </h4>
-                    <a href="{{ route('visits.request') }}" class="btn btn-light">
-                        <i class="fas fa-plus me-2"></i>
-                        Nueva Solicitud
-                    </a>
                 </div>
                 <div class="card-body p-4">
                     @if(session('success'))
@@ -33,7 +29,6 @@
                                     <tr>
                                         <th>Fecha de Visita</th>
                                         <th>Institución</th>
-                                        <th>Grupo</th>
                                         <th>Estado</th>
                                         <th>Solicitado</th>
                                         <th>Acciones</th>
@@ -43,15 +38,12 @@
                                     @foreach($visits as $visit)
                                         <tr>
                                             <td>
-                                                <div class="fw-bold">{{ \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y') }}</div>
-                                                <small class="text-muted">{{ $visit->visit_time }}</small>
+                                                <div class="fw-bold">{{ \Carbon\Carbon::parse($visit->preferred_date)->format('d/m/Y') }}</div>
+                                                <small class="text-muted">{{ \Carbon\Carbon::parse($visit->preferred_start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($visit->preferred_end_time)->format('H:i') }}</small>
                                             </td>
                                             <td>
                                                 <div class="fw-bold">{{ $visit->institution_name }}</div>
                                                 <small class="text-muted">{{ ucfirst($visit->institution_type) }}</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">{{ $visit->group_size }} personas</span>
                                             </td>
                                             <td>
                                                 @switch($visit->status)
@@ -85,7 +77,7 @@
                                             </td>
                                             <td>
                                                 <small class="text-muted">
-                                                    {{ \Carbon\Carbon::parse($visit->requested_at)->format('d/m/Y H:i') }}
+                                                    {{ \Carbon\Carbon::parse($visit->created_at)->format('d/m/Y H:i') }}
                                                 </small>
                                             </td>
                                             <td>

@@ -67,11 +67,11 @@
                             </tr>
                             <tr>
                                 <td><strong>Fecha de Visita:</strong></td>
-                                <td>{{ $visit->visit_date->format('d/m/Y') }}</td>
+                                <td>{{ $visit->preferred_date->format('d/m/Y') }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Hora:</strong></td>
-                                <td>{{ $visit->visit_time }}</td>
+                                <td>{{ $visit->preferred_start_time->format('H:i') }} - {{ $visit->preferred_end_time->format('H:i') }}</td>
                             </tr>
                             <tr>
                                 <td><strong>Duración:</strong></td>
@@ -372,7 +372,7 @@
                     <div class="modal-body">
                         <p><strong>¿Estás seguro de que deseas aprobar esta visita?</strong></p>
                         <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                        <p><strong>Fecha:</strong> {{ $visit->visit_date->format('d/m/Y') }}</p>
+                        <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
                         
                         <div class="mb-3">
                             <label for="admin_notes" class="form-label">Notas del Administrador (opcional):</label>
@@ -405,7 +405,7 @@
                     <div class="modal-body">
                         <p><strong>¿Estás seguro de que deseas rechazar esta visita?</strong></p>
                         <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                        <p><strong>Fecha:</strong> {{ $visit->visit_date->format('d/m/Y') }}</p>
+                        <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
                         
                         <div class="mb-3">
                             <label for="rejection_reason" class="form-label">Motivo del Rechazo: <span class="text-danger">*</span></label>
@@ -445,7 +445,7 @@
                     <div class="modal-body">
                         <p><strong>¿Estás seguro de que deseas marcar esta visita como completada?</strong></p>
                         <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                        <p><strong>Fecha:</strong> {{ $visit->visit_date->format('d/m/Y') }}</p>
+                        <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
                         
                         <div class="mb-3">
                             <label for="completion_notes" class="form-label">Notas de Completado (opcional):</label>

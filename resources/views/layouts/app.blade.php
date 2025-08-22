@@ -205,7 +205,7 @@
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             @auth
-            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin() || auth()->user()->isVisitor())
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button">
                     <i class="fas fa-bars"></i>
@@ -295,6 +295,19 @@
                         </a>
                     </li>
                     
+                    <li class="nav-item">
+                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Chats</p>
+                            @php
+                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
+                            @endphp
+                            @if($unreadChats > 0)
+                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    
                     <!-- Administración -->
                     <li class="nav-header">ADMINISTRACIÓN</li>
                     
@@ -309,18 +322,6 @@
                         <a href="{{ route('admin.roles.index') }}" class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-user-cog"></i>
                             <p>Roles y Permisos</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-comments"></i>
-                            <p>Chats</p>
-                            @php
-                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
-                            @endphp
-                            @if($unreadChats > 0)
-                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
-                            @endif
                         </a>
                     </li>
                     
@@ -377,6 +378,65 @@
                         </a>
                     </li>
                     
+                    <li class="nav-item">
+                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Chats</p>
+                            @php
+                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
+                            @endphp
+                            @if($unreadChats > 0)
+                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    
+
+
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+    </aside>
+    @elseif(auth()->user()->isVisitor())
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
+        <a href="{{ route('dashboard') }}" class="brand-link">
+            <i style="opacity: .8"></i>
+            <span class="brand-text font-weight-light">📑Sistema de Visitas</span>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <!-- Inicio -->
+                    <li class="nav-item">
+                        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-home"></i>
+                            <p>Inicio</p>
+                        </a>
+                    </li>
+                    
+                    <!-- Mis Visitas -->
+                    <li class="nav-header">MIS VISITAS</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('visits.request') }}" class="nav-link {{ request()->routeIs('visits.request') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <p>Nueva Solicitud</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('visits.my-requests') }}" class="nav-link {{ request()->routeIs('visits.my-requests') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Mis Solicitudes</p>
+                        </a>
+                    </li>
+                    
                     <!-- Comunicación -->
                     <li class="nav-header">COMUNICACIÓN</li>
                     
@@ -393,7 +453,6 @@
                         </a>
                     </li>
                     
-
 
                 </ul>
             </nav>

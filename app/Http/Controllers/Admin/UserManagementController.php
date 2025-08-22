@@ -60,7 +60,8 @@ class UserManagementController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
+        // Filtrar roles disponibles - excluir SuperAdmin
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         return view('admin.users.create', compact('roles'));
     }
 
@@ -77,6 +78,14 @@ class UserManagementController extends Controller
             'institution_name' => 'nullable|string|max:255',
             'contact_phone' => 'nullable|string|max:20',
         ]);
+
+        // Validar que no se esté asignando el rol de SuperAdmin
+        $selectedRole = Role::find($request->role_id);
+        if ($selectedRole && $selectedRole->name === 'superadmin') {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['role_id' => 'No se puede asignar el rol de Super Administrador desde esta interfaz.']);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -98,7 +107,8 @@ class UserManagementController extends Controller
      */
     public function edit(User $user)
     {
-        $roles = Role::all();
+        // Filtrar roles disponibles - excluir SuperAdmin
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
@@ -115,6 +125,14 @@ class UserManagementController extends Controller
             'institution_name' => 'nullable|string|max:255',
             'contact_phone' => 'nullable|string|max:20',
         ]);
+
+        // Validar que no se esté asignando el rol de SuperAdmin
+        $selectedRole = Role::find($request->role_id);
+        if ($selectedRole && $selectedRole->name === 'superadmin') {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['role_id' => 'No se puede asignar el rol de Super Administrador desde esta interfaz.']);
+        }
 
         $data = [
             'name' => $request->name,

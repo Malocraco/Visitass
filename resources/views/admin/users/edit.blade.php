@@ -207,6 +207,15 @@
                     <strong>Nota:</strong> Estás editando tu propia cuenta.
                 </div>
                 @endif
+                
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-shield-alt me-1"></i>Restricción de Seguridad:</h6>
+                    <p class="mb-0">
+                        <i class="fas fa-lock me-1"></i>
+                        <strong>El rol de Super Administrador no se puede asignar desde esta interfaz</strong> por motivos de seguridad. 
+                        Solo los Super Administradores existentes pueden otorgar este privilegio directamente en la base de datos.
+                    </p>
+                </div>
             </div>
         </div>
         

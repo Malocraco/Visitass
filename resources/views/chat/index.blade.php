@@ -9,15 +9,12 @@
         Chats
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        @if(!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin())
+        @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
         <div class="btn-group me-2">
             <a href="{{ route('chat.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-1"></i>Nuevo Chat
             </a>
         </div>
-        @endif
-        @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-
         @endif
     </div>
 </div>
@@ -37,42 +34,6 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
-
-<!-- Filtros -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('chat.index') }}" class="row g-3">
-            <div class="col-md-3">
-                <label for="status" class="form-label">Estado</label>
-                <select class="form-select" id="status" name="status">
-                    <option value="">Todos</option>
-                    <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Abierto</option>
-                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
-                    <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Cerrado</option>
-                    <option value="resolved" {{ request('status') == 'resolved' ? 'selected' : '' }}>Resuelto</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="search" class="form-label">Buscar</label>
-                <input type="text" class="form-control" id="search" name="search" 
-                       value="{{ request('search') }}" placeholder="Asunto o mensaje...">
-            </div>
-            <div class="col-md-3">
-                <label for="date" class="form-label">Fecha</label>
-                <input type="date" class="form-control" id="date" name="date" 
-                       value="{{ request('date') }}">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-1"></i>Filtrar
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 
 <!-- Lista de Chats -->
 <div class="card">
@@ -195,8 +156,14 @@
         <div class="text-center py-5">
             <i class="fas fa-comments fa-4x text-muted mb-3"></i>
             <h5 class="text-muted">No hay chats disponibles</h5>
-            <p class="text-muted">Cuando se creen chats, aparecerán aquí.</p>
-            @if(!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin())
+            <p class="text-muted">
+                @if(auth()->user()->isVisitor())
+                    Los administradores crearán chats cuando necesiten comunicarse contigo sobre tus solicitudes.
+                @else
+                    Cuando se creen chats, aparecerán aquí.
+                @endif
+            </p>
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
             <a href="{{ route('chat.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-1"></i>Crear Nuevo Chat
             </a>

@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
             ->name('visits.my-requests');
         Route::get('/visits/{id}', [VisitRequestController::class, 'showRequest'])
             ->name('visits.show');
+        Route::get('/visits/available-dates', [VisitRequestController::class, 'getAvailableDates'])
+            ->name('visits.available-dates');
     });
     
     // Rutas para gestión de visitas (SuperAdmin y Administrador)
@@ -122,15 +124,13 @@ Route::middleware('auth')->group(function () {
         
     });
     
-    // Configuración de Cuenta (SuperAdmin y Administrador)
-    Route::middleware('role:superadmin,administrador')->group(function () {
-        Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])
-            ->name('admin.settings.index');
-        Route::put('/admin/settings/profile', [App\Http\Controllers\Admin\SettingsController::class, 'updateProfile'])
-            ->name('admin.settings.profile');
-        Route::put('/admin/settings/password', [App\Http\Controllers\Admin\SettingsController::class, 'changePassword'])
-            ->name('admin.settings.password');
-    });
+    // Configuración de Cuenta (Todos los usuarios autenticados)
+    Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])
+        ->name('admin.settings.index');
+    Route::put('/admin/settings/profile', [App\Http\Controllers\Admin\SettingsController::class, 'updateProfile'])
+        ->name('admin.settings.profile');
+    Route::put('/admin/settings/password', [App\Http\Controllers\Admin\SettingsController::class, 'changePassword'])
+        ->name('admin.settings.password');
  });
 
 // Rutas del Sistema de Chat
