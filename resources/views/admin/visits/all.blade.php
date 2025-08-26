@@ -14,7 +14,7 @@
                 <i class="fas fa-print me-1"></i>Imprimir
             </button>
             <button type="button" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-download me-1"></i>Exportarr
+                <i class="fas fa-download me-1"></i>Exportar
             </button>
         </div>
     </div>
