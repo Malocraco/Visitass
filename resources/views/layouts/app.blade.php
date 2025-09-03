@@ -1,520 +1,325 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema de Visitas')</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
     
-    <style>
-        .navbar-brand {
-            font-weight: bold;
-        }
-        
-        /* Estilos personalizados adicionales */
-        .main-sidebar {
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%) !important;
-        }
-        
-        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
-            color: #ecf0f1 !important;
-        }
-        
-        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
-            color: white !important;
-        }
-        
-        .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
-            color: white !important;
-        }
-        
-        .sidebar .nav-link {
-            color: #ecf0f1;
-            padding: 12px 20px;
-            margin: 4px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .sidebar .nav-link:hover {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .sidebar .nav-link.active {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-        
-        .sidebar .nav-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent 0%, #ecf0f1 50%, transparent 100%);
-            margin: 15px 20px;
-            opacity: 0.3;
-        }
-        
-        .sidebar .nav-section-title {
-            color: #bdc3c7;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 20px 20px 8px 20px;
-            margin: 0;
-        }
-        
-
-        
-        .sidebar .user-info {
-            background: rgba(255,255,255,0.1);
-            margin: 20px 12px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .sidebar .user-info .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            color: white;
-            font-size: 1.2rem;
-        }
-        
-        .sidebar .user-info .user-name {
-            color: #ecf0f1;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-align: center;
-            margin: 0;
-        }
-        
-        .sidebar .user-info .user-role {
-            color: #bdc3c7;
-            font-size: 0.75rem;
-            text-align: center;
-            margin: 0;
-        }
-        
-        .main-content {
-            min-height: calc(100vh - 56px);
-        }
-        
-        .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        
-        /* Estilos para las tarjetas del dashboard */
-        .border-left-primary {
-            border-left: 0.25rem solid #4e73df !important;
-        }
-        
-        .border-left-success {
-            border-left: 0.25rem solid #1cc88a !important;
-        }
-        
-        .border-left-info {
-            border-left: 0.25rem solid #36b9cc !important;
-        }
-        
-        .border-left-warning {
-            border-left: 0.25rem solid #f6c23e !important;
-        }
-        
-        .text-gray-300 {
-            color: #dddfeb !important;
-        }
-        
-        .text-gray-800 {
-            color: #5a5c69 !important;
-        }
-        
-        .text-xs {
-            font-size: 0.7rem;
-        }
-        
-        .font-weight-bold {
-            font-weight: 700 !important;
-        }
-        
-        .text-uppercase {
-            text-transform: uppercase !important;
-        }
-        
-        /* Animación de entrada para elementos del sidebar */
-        .sidebar .nav-item {
-            opacity: 0;
-            animation: slideInLeft 0.5s ease forwards;
-        }
-        
-        .sidebar .nav-item:nth-child(1) { animation-delay: 0.1s; }
-        .sidebar .nav-item:nth-child(2) { animation-delay: 0.2s; }
-        .sidebar .nav-item:nth-child(3) { animation-delay: 0.3s; }
-        .sidebar .nav-item:nth-child(4) { animation-delay: 0.4s; }
-        .sidebar .nav-item:nth-child(5) { animation-delay: 0.5s; }
-        .sidebar .nav-item:nth-child(6) { animation-delay: 0.6s; }
-        .sidebar .nav-item:nth-child(7) { animation-delay: 0.7s; }
-        .sidebar .nav-item:nth-child(8) { animation-delay: 0.8s; }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-
-    </style>
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     @stack('styles')
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
-    <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-        <!-- Left navbar links -->
-        <ul class="navbar-nav">
+<body class="h-full bg-gray-50">
+    <div class="min-h-full">
             @auth
-            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin() || auth()->user()->isVisitor())
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                    <i class="fas fa-bars"></i>
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0" id="sidebar">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-16 px-4 bg-primary-600">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
+                    <div class="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+                        <svg class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-white">Sistema de Visitas</span>
                 </a>
-            </li>
-            @endif
-            @endauth
+            </div>
             
-        </ul>
-
-        <!-- Right navbar links -->
-        <ul class="navbar-nav ml-auto">
+            <!-- Navigation -->
+            <nav class="mt-5 px-2">
+                <div class="space-y-1">
+                    <!-- Dashboard -->
+                    <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard*') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    
+                    @if(auth()->user()->isVisitor())
+                        <!-- Nueva Solicitud -->
+                        <a href="{{ route('visits.request') }}" class="sidebar-link {{ request()->routeIs('visits.request') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Nueva Solicitud
+                        </a>
+                        
+                        <!-- Mis Solicitudes -->
+                        <a href="{{ route('visits.my-requests') }}" class="sidebar-link {{ request()->routeIs('visits.my-requests') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Mis Solicitudes
+                        </a>
+                            @endif
+                    
+                    @if(auth()->user()->isSuperAdmin())
+                        <!-- Solicitudes Pendientes -->
+                        <a href="{{ route('admin.visits.pending') }}" class="sidebar-link {{ request()->routeIs('admin.visits.pending') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Solicitudes Pendientes
+                        </a>
+                        
+                        <!-- Todas las Visitas -->
+                        <a href="{{ route('admin.visits.all') }}" class="sidebar-link {{ request()->routeIs('admin.visits.all') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Todas las Visitas
+                        </a>
+                        
+                        <!-- Usuarios -->
+                        <a href="{{ route('admin.users.index') }}" class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
+                            Usuarios
+                        </a>
+                    @endif
+                    
+                    @if(auth()->user()->isAdmin())
+                        <!-- Visitas Aprobadas -->
+                        <a href="{{ route('admin.visits.approved') }}" class="sidebar-link {{ request()->routeIs('admin.visits.approved') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Visitas Aprobadas
+                        </a>
+                    @endif
+                    
+                    <!-- Chat -->
+                    <a href="{{ route('chat.index') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'bg-primary-100 text-primary-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Chat
+                        <span id="chat-notifications" class="ml-auto inline-flex items-center rounded-full bg-danger-100 px-2 py-0.5 text-xs font-medium text-danger-800 hidden">0</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <!-- User info at bottom -->
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center">
+                        <span class="text-sm font-medium text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
+                        <p class="text-xs text-gray-500">{{ auth()->user()->getPrimaryRole()->display_name ?? 'Usuario' }}</p>
+                    </div>
+                    <div class="relative">
+                        <button type="button" class="flex items-center text-gray-400 hover:text-gray-600 focus:outline-none" id="user-menu-button">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown menu -->
+                        <div class="absolute right-0 bottom-full mb-2 w-48 origin-bottom-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-menu">
+                            <a href="{{ route('admin.settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                <svg class="inline-block w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Configuración
+                            </a>
+                            <div class="border-t border-gray-100"></div>
+                            <form method="POST" action="{{ route('logout') }}" class="block">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <svg class="inline-block w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile sidebar overlay -->
+        <div class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 hidden" id="sidebar-overlay"></div>
+        @endauth
+        
+        <!-- Main content -->
+        <div class="{{ auth()->check() ? 'lg:pl-64' : '' }}">
             @auth
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-user me-1"></i>
-                    {{ auth()->user()->name }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ route('admin.settings.index') }}"><i class="fas fa-cog me-2"></i>Configuración</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                            @csrf
-                            <button type="submit" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </li>
-            @endauth
-        </ul>
-    </nav>
-
-    <!-- Main Sidebar Container -->
-    @auth
-    @if(auth()->user()->isSuperAdmin())
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
-        <a href="{{ route('dashboard') }}" class="brand-link">
-            <i style="opacity: .8"></i>
-            <span class="brand-text font-weight-light">📑Sistema de Visitas</span>
-        </a>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <!-- Inicio -->
-                    <li class="nav-item">
-                        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-home"></i>
-                            <p>Inicio</p>
-                        </a>
-                    </li>
-                    
-                    <!-- Gestión de Visitas -->
-                    <li class="nav-header">GESTIÓN DE VISITAS</li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.pending') }}" class="nav-link {{ request()->routeIs('admin.visits.pending') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clock"></i>
-                            <p>Solicitudes</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.all') }}" class="nav-link {{ request()->routeIs('admin.visits.all') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-tasks"></i>
-                            <p>Todas las Visitas</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.calendar') }}" class="nav-link {{ request()->routeIs('admin.visits.calendar') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-calendar-check"></i>
-                            <p>Calendario</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.reports') }}" class="nav-link {{ request()->routeIs('admin.visits.reports') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-chart-bar"></i>
-                            <p>Reportes</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-comments"></i>
-                            <p>Chats</p>
-                            @php
-                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
-                            @endphp
-                            @if($unreadChats > 0)
-                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
-                            @endif
-                        </a>
-                    </li>
-                    
-                    <!-- Administración -->
-                    <li class="nav-header">ADMINISTRACIÓN</li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Gestión de Usuarios</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.roles.index') }}" class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-user-cog"></i>
-                            <p>Roles y Permisos</p>
-                        </a>
-                    </li>
-                    
-
-
-                </ul>
-            </nav>
-            <!-- /.sidebar-menu -->
+            <!-- Top bar -->
+            <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+                <!-- Mobile menu button -->
+                <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" id="mobile-menu-button">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+                
+                <!-- Separator -->
+                <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"></div>
+                
+                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                    <div class="flex flex-1"></div>
+                    <div class="flex items-center gap-x-4 lg:gap-x-6">
+                        <!-- Notifications -->
+                        <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">View notifications</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
         </div>
-        <!-- /.sidebar -->
-    </aside>
-    @elseif(auth()->user()->isAdmin())
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
-        <a href="{{ route('dashboard') }}" class="brand-link">
-            <i style="opacity: .8"></i>
-            <span class="brand-text font-weight-light">Sistema de Visitas</span>
-        </a>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <!-- Inicio -->
-                    <li class="nav-item">
-                        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-home"></i>
-                            <p>Inicio</p>
-                        </a>
-                    </li>
-                    
-                    <!-- Gestión de Visitas -->
-                    <li class="nav-header">GESTIÓN DE VISITAS</li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.approved') }}" class="nav-link {{ request()->routeIs('admin.visits.approved') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-check-circle"></i>
-                            <p>Visitas Aprobadas</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.calendar') }}" class="nav-link {{ request()->routeIs('admin.visits.calendar') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-calendar-check"></i>
-                            <p>Calendario</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('admin.visits.reports') }}" class="nav-link {{ request()->routeIs('admin.visits.reports') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-chart-bar"></i>
-                            <p>Reportes</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-comments"></i>
-                            <p>Chats</p>
-                            @php
-                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
-                            @endphp
-                            @if($unreadChats > 0)
-                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
-                            @endif
-                        </a>
-                    </li>
-                    
-
-
-                </ul>
-            </nav>
-            <!-- /.sidebar-menu -->
-        </div>
-        <!-- /.sidebar -->
-    </aside>
-    @elseif(auth()->user()->isVisitor())
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <!-- Brand Logo -->
-        <a href="{{ route('dashboard') }}" class="brand-link">
-            <i style="opacity: .8"></i>
-            <span class="brand-text font-weight-light">📑Sistema de Visitas</span>
-        </a>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <!-- Inicio -->
-                    <li class="nav-item">
-                        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-home"></i>
-                            <p>Inicio</p>
-                        </a>
-                    </li>
-                    
-                    <!-- Mis Visitas -->
-                    <li class="nav-header">MIS VISITAS</li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('visits.request') }}" class="nav-link {{ request()->routeIs('visits.request') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-plus-circle"></i>
-                            <p>Nueva Solicitud</p>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('visits.my-requests') }}" class="nav-link {{ request()->routeIs('visits.my-requests') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-clipboard-list"></i>
-                            <p>Mis Solicitudes</p>
-                        </a>
-                    </li>
-                    
-                    <!-- Comunicación -->
-                    <li class="nav-header">COMUNICACIÓN</li>
-                    
-                    <li class="nav-item">
-                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-comments"></i>
-                            <p>Chats</p>
-                            @php
-                                $unreadChats = \App\Models\ChatRoom::where('status', 'open')->count();
-                            @endphp
-                            @if($unreadChats > 0)
-                                <span class="badge badge-danger right">{{ $unreadChats }}</span>
-                            @endif
-                        </a>
-                    </li>
-                    
-
-                </ul>
-            </nav>
-            <!-- /.sidebar-menu -->
-        </div>
-        <!-- /.sidebar -->
-    </aside>
-    @endif
     @endauth
             
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
+            <!-- Page content -->
+            <main class="py-6">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <!-- Flash Messages -->
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="mb-4 rounded-md bg-success-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-success-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-success-800">{{ session('success') }}</p>
+                                </div>
+                            </div>
                     </div>
                 @endif
                 
                 @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="mb-4 rounded-md bg-danger-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-danger-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-danger-800">{{ session('error') }}</p>
+                                </div>
+                            </div>
                     </div>
                 @endif
                 
                 @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0">
+                        <div class="mb-4 rounded-md bg-danger-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-danger-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm text-danger-800">
+                                        <ul class="list-disc list-inside space-y-1">
                             @foreach($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                 @endif
+
+                    @yield('content')
             </div>
+            </main>
         </div>
-        <!-- /.content-header -->
-
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
-                @yield('content')
-            </div>
-        </section>
-        <!-- /.content -->
     </div>
-    <!-- /.content-wrapper -->
-</div>
-<!-- ./wrapper -->
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = document.getElementById('user-menu');
+            
+            // Mobile sidebar toggle
+            if (mobileMenuButton && sidebar && sidebarOverlay) {
+                mobileMenuButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('-translate-x-full');
+                    sidebarOverlay.classList.toggle('hidden');
+                });
+                
+                // Close sidebar when clicking overlay
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                });
+            }
+            
+            // User menu toggle
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', function() {
+                    userMenu.classList.toggle('hidden');
+                });
+                
+                // Close user menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 
 @stack('scripts')
+<!-- Chat Notifications Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para actualizar notificaciones de chat
+    function updateChatNotifications() {
+        fetch('/chat/notifications')
+            .then(response => response.json())
+            .then(data => {
+                const notificationElement = document.getElementById('chat-notifications');
+                if (data.total_notifications > 0) {
+                    notificationElement.textContent = data.total_notifications;
+                    notificationElement.classList.remove('hidden');
+                } else {
+                    notificationElement.classList.add('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener notificaciones de chat:', error);
+            });
+    }
+
+    // Actualizar notificaciones al cargar la página
+    updateChatNotifications();
+
+    // Actualizar notificaciones cada 30 segundos
+    setInterval(updateChatNotifications, 30000);
+
+    // Actualizar notificaciones cuando se hace clic en el enlace de chat
+    document.querySelector('a[href="{{ route('chat.index') }}"]').addEventListener('click', function() {
+        setTimeout(updateChatNotifications, 1000);
+    });
+});
+</script>
+
 </body>
 </html>

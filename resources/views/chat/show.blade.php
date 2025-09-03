@@ -3,218 +3,193 @@
 @section('title', 'Chat - ' . $chatRoom->subject)
 
 @section('content')
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">
-        <i class="fas fa-comments text-primary me-2"></i>
+<!-- Hidden inputs for JavaScript -->
+<input type="hidden" id="chat-room-id" value="{{ $chatRoom->room_id }}">
+<input type="hidden" id="user-id" value="{{ auth()->id() }}">
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+        <svg class="w-6 h-6 text-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
         Chat: {{ $chatRoom->subject }}
     </h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <a href="{{ route('chat.index') }}" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Volver
-            </a>
-        </div>
+    <div class="flex space-x-2">
+        <a href="{{ route('chat.index') }}" class="btn-secondary">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver
+        </a>
         @if((auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()) && $chatRoom->isActive())
-        <div class="btn-group me-2">
-            <form action="{{ route('chat.close', $chatRoom->room_id) }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-outline-warning" 
-                        onclick="return confirm('¿Estás seguro de cerrar este chat?')">
-                    <i class="fas fa-times me-1"></i>Cerrar
-                </button>
-            </form>
-            <form action="{{ route('chat.resolve', $chatRoom->room_id) }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-outline-success" 
-                        onclick="return confirm('¿Marcar como resuelto?')">
-                    <i class="fas fa-check me-1"></i>Resolver
-                </button>
-            </form>
-        </div>
+        <form action="{{ route('chat.close', $chatRoom->room_id) }}" method="POST" class="inline">
+            @csrf
+            <button type="submit" class="btn-warning close-chat-btn">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cerrar
+            </button>
+        </form>
+        <form action="{{ route('chat.resolve', $chatRoom->room_id) }}" method="POST" class="inline">
+            @csrf
+            <button type="submit" class="btn-success resolve-chat-btn">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Resolver
+            </button>
+        </form>
         @endif
     </div>
 </div>
 
 @if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="fas fa-check-circle me-2"></i>
+<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-4 flex items-center">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
     {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
 
-<div class="row">
-    <!-- Información del Chat -->
-    <div class="col-md-3">
+@if(session('error'))
+<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4 flex items-center">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    {{ session('error') }}
+</div>
+@endif
+
+<!-- Chat Container -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Chat Messages -->
+    <div class="lg:col-span-3">
         <div class="card">
-            <div class="card-header">
-                <h6 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Información del Chat
-                </h6>
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    Conversación
+                </h3>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <strong>Estado:</strong><br>
-                    @switch($chatRoom->status)
-                        @case('open')
-                            <span class="badge bg-warning">Abierto</span>
-                            @break
-                        @case('active')
-                            <span class="badge bg-primary">Activo</span>
-                            @break
-                        @case('closed')
-                            <span class="badge bg-secondary">Cerrado</span>
-                            @break
-                        @case('resolved')
-                            <span class="badge bg-success">Resuelto</span>
-                            @break
-                    @endswitch
-                </div>
-                
-                <div class="mb-3">
-                    <strong>Visitante:</strong><br>
-                    <div class="d-flex align-items-center mt-1">
-                        <i class="fas fa-user-circle fa-2x text-primary me-2"></i>
-                        <div>
-                            <div class="fw-bold">{{ $chatRoom->visitor->name }}</div>
-                            <small class="text-muted">{{ $chatRoom->visitor->email }}</small>
+            
+            <!-- Messages Container -->
+            <div id="messages-container" class="h-96 overflow-y-auto p-6 space-y-4">
+                @foreach($chatRoom->messages as $message)
+                <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
+                    <div class="relative max-w-xs lg:max-w-md px-4 py-2 rounded-lg {{ $message->sender_id === auth()->id() ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800' }} message-bubble" data-message-id="{{ $message->id }}">
+                        <div class="text-sm message-text">{{ $message->message }}</div>
+                        <div class="text-xs mt-1 opacity-75 flex items-center justify-between">
+                            <span>{{ $message->sender->name }} • {{ $message->getFormattedTime() }}</span>
+                            @if($message->sender_id === auth()->id())
+                                <button class="message-options-btn ml-2 opacity-60 hover:opacity-100 transition-opacity" data-message-id="{{ $message->id }}">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
-                
-                @if($chatRoom->admin)
-                <div class="mb-3">
-                    <strong>Administrador:</strong><br>
-                    <div class="d-flex align-items-center mt-1">
-                        <i class="fas fa-user-shield fa-2x text-success me-2"></i>
-                        <div>
-                            <div class="fw-bold">{{ $chatRoom->admin->name }}</div>
-                            <small class="text-muted">{{ $chatRoom->admin->email }}</small>
-                        </div>
+                @endforeach
+            </div>
+            
+            <!-- Formulario de envío -->
+            @if($chatRoom->isActive())
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <form id="message-form">
+                    @csrf
+                    <div class="flex">
+                        <textarea class="form-input flex-1 rounded-r-none" id="message-input" name="message" 
+                                  placeholder="Escribe tu mensaje..." rows="2" required></textarea>
+                        <button type="submit" class="btn-primary rounded-l-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </button>
                     </div>
-                </div>
-                @endif
-                
-                <div class="mb-3">
-                    <strong>Creado:</strong><br>
-                    <small class="text-muted">{{ $chatRoom->created_at->format('d/m/Y H:i') }}</small>
-                </div>
-                
-                @if($chatRoom->last_message_at)
-                <div class="mb-3">
-                    <strong>Último mensaje:</strong><br>
-                    <small class="text-muted">{{ $chatRoom->last_message_at->format('d/m/Y H:i') }}</small>
-                </div>
-                @endif
-                
-                <div class="mb-3">
-                    <strong>Total mensajes:</strong><br>
-                    <span class="badge bg-info">{{ $chatRoom->messages->count() }}</span>
+                </form>
+            </div>
+            @else
+            <div class="p-4 border-t border-gray-200 bg-gray-50">
+                <div class="text-center text-gray-500">
+                    <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <p>Este chat está cerrado</p>
                 </div>
             </div>
+            @endif
         </div>
-        
-        <!-- Estado de conexión -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6 class="mb-0">
-                    <i class="fas fa-wifi me-2"></i>Estado de Conexión
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="mb-2">
-                    <span class="fw-bold">Visitante:</span>
-                    @if($chatRoom->visitor_online)
-                        <span class="badge bg-success">Online</span>
-                    @else
-                        <span class="badge bg-secondary">Offline</span>
-                    @endif
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="lg:col-span-1">
+        <div class="space-y-6">
+            <!-- Chat Info -->
+            <div class="card">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900">Información del Chat</h3>
                 </div>
-                <div class="mb-2">
-                    <span class="fw-bold">Administrador:</span>
-                    @if($chatRoom->admin_online)
-                        <span class="badge bg-success">Online</span>
-                    @else
-                        <span class="badge bg-secondary">Offline</span>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Asunto</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $chatRoom->subject }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Estado</label>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            @if($chatRoom->status === 'open') bg-yellow-100 text-yellow-800
+                            @elseif($chatRoom->status === 'active') bg-green-100 text-green-800
+                            @elseif($chatRoom->status === 'closed') bg-red-100 text-red-800
+                            @else bg-gray-100 text-gray-800
+                            @endif">
+                            {{ ucfirst($chatRoom->status) }}
+                        </span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Visitante</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $chatRoom->visitor->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $chatRoom->visitor->email }}</p>
+                    </div>
+                    @if($chatRoom->admin)
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Administrador</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $chatRoom->admin->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $chatRoom->admin->email }}</p>
+                    </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Área de Chat -->
-    <div class="col-md-9">
-        <div class="card">
-            <div class="card-header">
-                <h6 class="mb-0">
-                    <i class="fas fa-comments me-2"></i>Conversación
-                </h6>
+</div>
+
+<!-- Modal de confirmación para eliminar mensaje -->
+<div id="delete-message-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-10 h-10 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
             </div>
-            <div class="card-body p-0">
-                <!-- Mensajes -->
-                <div id="chat-messages" class="chat-messages" style="height: 400px; overflow-y: auto; padding: 1rem;">
-                    @foreach($chatRoom->messages as $message)
-                    <div class="message {{ $message->sender_id === auth()->id() ? 'message-own' : 'message-other' }}">
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">
-                                    @if($message->isFromAdmin())
-                                        <i class="fas fa-user-shield text-success me-1"></i>
-                                    @else
-                                        <i class="fas fa-user text-primary me-1"></i>
-                                    @endif
-                                    {{ $message->sender->name }}
-                                </span>
-                                <span class="message-time">{{ $message->getFormattedTime() }}</span>
-                            </div>
-                            <div class="message-text">{{ $message->message }}</div>
-                            @if($message->hasAttachment())
-                            <div class="message-attachment">
-                                <a href="{{ $message->getAttachmentUrl() }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-paperclip me-1"></i>{{ $message->attachment_name }}
-                                </a>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                
-                <!-- Formulario de envío -->
-                @if($chatRoom->isActive())
-                <div class="chat-input p-3 border-top">
-                    <form id="message-form" enctype="multipart/form-data">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="input-group">
-                                    <textarea class="form-control" id="message-input" name="message" 
-                                              placeholder="Escribe tu mensaje..." rows="2" required></textarea>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex gap-2">
-                                    <label for="attachment" class="btn btn-outline-secondary btn-sm">
-                                        <i class="fas fa-paperclip me-1"></i>Adjuntar
-                                    </label>
-                                    <input type="file" id="attachment" name="attachment" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                    <span id="file-name" class="text-muted small"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                @else
-                <div class="p-3 border-top bg-light">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-lock fa-2x mb-2"></i>
-                        <p class="mb-0">Este chat está cerrado y no se pueden enviar más mensajes.</p>
-                    </div>
-                </div>
-                @endif
+        </div>
+        <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">¿Eliminar mensaje?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                Esta acción no se puede deshacer. El mensaje se eliminará permanentemente.
+            </p>
+            <div class="flex space-x-3 justify-center">
+                <button id="cancel-delete" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Cancelar
+                </button>
+                <button id="confirm-delete" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Eliminar
+                </button>
             </div>
         </div>
     </div>
@@ -223,231 +198,275 @@
 
 @push('styles')
 <style>
-.chat-messages {
-    background-color: #f8f9fa;
+/* Estilos para el dropdown de mensajes */
+.message-dropdown {
+    background: #2d3748;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    min-width: 120px;
+    z-index: 1000;
 }
 
-.message {
-    margin-bottom: 1rem;
+.dropdown-item {
     display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
 }
 
-.message-own {
-    justify-content: flex-end;
+.dropdown-item:hover {
+    background-color: #4a5568;
 }
 
-.message-other {
-    justify-content: flex-start;
+.dropdown-item:first-child {
+    border-radius: 8px 8px 0 0;
 }
 
-.message-content {
-    max-width: 70%;
-    padding: 0.75rem;
-    border-radius: 1rem;
+.dropdown-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdown-item svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+/* Estilos para el botón de opciones */
+.message-options-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.message-options-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para mensajes del usuario (siempre a la derecha) */
+.message-bubble {
     position: relative;
 }
 
-.message-own .message-content {
-    background-color: #007bff;
-    color: white;
-    border-bottom-right-radius: 0.25rem;
+/* Estilos para el input de edición */
+.message-text input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: inherit;
+    font-size: inherit;
+    width: 100%;
 }
 
-.message-other .message-content {
-    background-color: white;
-    border: 1px solid #dee2e6;
-    border-bottom-left-radius: 0.25rem;
+/* Asegurar que los mensajes del usuario estén siempre a la derecha */
+.flex.justify-end {
+    justify-content: flex-end !important;
 }
 
-.message-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
+.flex.justify-start {
+    justify-content: flex-start !important;
 }
 
-.message-sender {
-    font-weight: bold;
+/* Estilos para el modal de confirmación */
+#delete-message-modal {
+    backdrop-filter: blur(4px);
 }
 
-.message-time {
-    opacity: 0.7;
+#delete-message-modal .bg-white {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideIn 0.3s ease-out;
 }
 
-.message-text {
-    word-wrap: break-word;
-}
-
-.message-attachment {
-    margin-top: 0.5rem;
-}
-
-.message-own .message-attachment .btn {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
-}
-
-.message-own .message-attachment .btn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: white;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-let lastMessageId = {{ $chatRoom->messages->last() ? $chatRoom->messages->last()->id : 0 }};
-let isTyping = false;
-
-// Función para enviar mensaje
-document.getElementById('message-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
-    
-    if (!message) return;
-    
-    // Deshabilitar formulario
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    
-    fetch('{{ route("chat.send-message", $chatRoom->room_id) }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Limpiar formulario
-            messageInput.value = '';
-            document.getElementById('file-name').textContent = '';
-            document.getElementById('attachment').value = '';
-            
-            // Agregar mensaje a la vista
-            addMessageToView(data.message, true);
-            
-            // Actualizar último mensaje
-            lastMessageId = data.message.id;
-        } else {
-            alert('Error al enviar mensaje: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al enviar mensaje');
-    })
-    .finally(() => {
-        // Rehabilitar formulario
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-    });
-});
-
-// Función para agregar mensaje a la vista
-function addMessageToView(message, isOwn = false) {
-    const messagesContainer = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${isOwn ? 'message-own' : 'message-other'}`;
-    
-    const attachmentHtml = message.attachment_path ? 
-        `<div class="message-attachment">
-            <a href="/storage/${message.attachment_path}" target="_blank" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-paperclip me-1"></i>${message.attachment_name}
-            </a>
-        </div>` : '';
-    
-    messageDiv.innerHTML = `
-        <div class="message-content">
-            <div class="message-header">
-                <span class="message-sender">
-                    ${message.sender_type === 'admin' ? 
-                        '<i class="fas fa-user-shield text-success me-1"></i>' : 
-                        '<i class="fas fa-user text-primary me-1"></i>'}
-                    ${message.sender.name}
-                </span>
-                <span class="message-time">${message.formatted_time}</span>
-            </div>
-            <div class="message-text">${message.message}</div>
-            ${attachmentHtml}
-        </div>
-    `;
-    
-    messagesContainer.appendChild(messageDiv);
-    scrollToBottom();
-}
-
-// Función para hacer scroll al final
-function scrollToBottom() {
-    const messagesContainer = document.getElementById('chat-messages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// Función para obtener nuevos mensajes
-function getNewMessages() {
-    fetch('{{ route("chat.get-messages", $chatRoom->room_id) }}')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const newMessages = data.messages.filter(msg => msg.id > lastMessageId);
-            
-            newMessages.forEach(message => {
-                const isOwn = message.sender_id === {{ auth()->id() }};
-                addMessageToView(message, isOwn);
-                lastMessageId = message.id;
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error getting messages:', error);
-    });
-}
-
-// Actualizar estado online
-function updateOnlineStatus(online) {
-    fetch('{{ route("chat.online-status") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ online: online })
-    });
-}
-
-// Configurar eventos
-document.addEventListener('DOMContentLoaded', function() {
-    scrollToBottom();
-    
-    // Obtener nuevos mensajes cada 3 segundos
-    setInterval(getNewMessages, 3000);
-    
-    // Actualizar estado online cada 30 segundos
-    setInterval(() => updateOnlineStatus(true), 30000);
-    
-    // Marcar como online al cargar
-    updateOnlineStatus(true);
-    
-    // Marcar como offline al cerrar
-    window.addEventListener('beforeunload', () => updateOnlineStatus(false));
-});
-
-// Manejar archivos adjuntos
-document.getElementById('attachment').addEventListener('change', function() {
-    const fileName = this.files[0] ? this.files[0].name : '';
-    document.getElementById('file-name').textContent = fileName;
-});
-
 // Auto-resize del textarea
 document.getElementById('message-input').addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 100) + 'px';
 });
+
+// Agregar event listeners a los mensajes iniciales
+document.addEventListener('DOMContentLoaded', function() {
+    const roomId = document.getElementById('chat-room-id')?.value;
+    const userId = document.getElementById('user-id')?.value;
+    
+    if (roomId && userId) {
+        // Agregar event listeners a los mensajes que ya están en la página
+        document.querySelectorAll('.message-options-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const messageId = this.dataset.messageId;
+                // Usar la funcionalidad del chat manager si está disponible
+                if (window.ultraSimpleChat) {
+                    window.ultraSimpleChat.toggleDropdown(e, { id: messageId });
+                }
+            });
+        });
+    }
+});
 </script>
+
+<!-- Chat JavaScript Ultra Simple (sin duplicación) -->
+<script src="{{ asset('js/chat-ultra-simple.js') }}"></script>
+
+<!-- JavaScript para modales de confirmación -->
+<script>
+let currentForm = null;
+
+// Interceptar botones de Cerrar y Resolver
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.close-chat-btn')) {
+        e.preventDefault();
+        currentForm = e.target.closest('form');
+        document.getElementById('close-chat-modal').classList.remove('hidden');
+    } else if (e.target.closest('.resolve-chat-btn')) {
+        e.preventDefault();
+        currentForm = e.target.closest('form');
+        document.getElementById('resolve-chat-modal').classList.remove('hidden');
+    }
+});
+
+// Función para cerrar modal de cerrar chat
+function closeCloseModal() {
+    document.getElementById('close-chat-modal').classList.add('hidden');
+    currentForm = null;
+}
+
+// Función para confirmar cerrar chat
+function confirmCloseChat() {
+    document.getElementById('close-chat-modal').classList.add('hidden');
+    if (currentForm) {
+        currentForm.submit();
+    }
+    currentForm = null;
+}
+
+// Función para cerrar modal de resolver chat
+function closeResolveModal() {
+    document.getElementById('resolve-chat-modal').classList.add('hidden');
+    currentForm = null;
+}
+
+// Función para confirmar resolver chat
+function confirmResolveChat() {
+    document.getElementById('resolve-chat-modal').classList.add('hidden');
+    if (currentForm) {
+        currentForm.submit();
+    }
+    currentForm = null;
+}
+
+// Event listeners para backdrop click
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'close-chat-modal') {
+        closeCloseModal();
+    }
+    if (e.target.id === 'resolve-chat-modal') {
+        closeResolveModal();
+    }
+});
+</script>
+
+<!-- Modales de confirmación para acciones del chat -->
+<!-- Modal de Cerrar Chat -->
+<div id="close-chat-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">¿Cerrar chat?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                El chat se cerrará y no se podrán enviar más mensajes hasta que se reactive.
+            </p>
+            <div class="flex space-x-3 justify-center">
+                <button onclick="closeCloseModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Cancelar
+                </button>
+                <button onclick="confirmCloseChat()" class="px-4 py-2 text-sm font-medium text-white bg-yellow-600 border border-transparent rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Resolver Chat -->
+<div id="resolve-chat-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-10 h-10 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">¿Marcar como resuelto?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                El chat se marcará como resuelto, indicando que la consulta ha sido atendida completamente.
+            </p>
+            <div class="flex space-x-3 justify-center">
+                <button onclick="closeResolveModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Cancelar
+                </button>
+                <button onclick="confirmResolveChat()" class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Resolver
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endpush
+
+@push('styles')
+<style>
+/* Estilos para los modales de confirmación */
+#close-chat-modal,
+#resolve-chat-modal {
+    backdrop-filter: blur(4px);
+}
+
+#close-chat-modal .bg-white,
+#resolve-chat-modal .bg-white {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+</style>
 @endpush

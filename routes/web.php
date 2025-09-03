@@ -86,12 +86,12 @@ Route::middleware('auth')->group(function () {
         // Acciones sobre visitas
         Route::post('/admin/visits/{id}/approve', [VisitManagementController::class, 'approveVisit'])
             ->name('admin.visits.approve');
-        Route::post('/admin/visits/{id}/reject', [VisitManagementController::class, 'rejectVisit'])
-            ->name('admin.visits.reject');
+        Route::post('/admin/visits/{id}/postpone', [VisitManagementController::class, 'postponeVisit'])
+            ->name('admin.visits.postpone');
     });
     
-    // Rutas específicas del Administrador
-    Route::middleware('role:administrador')->group(function () {
+    // Rutas específicas del Administrador y SuperAdmin
+    Route::middleware('role:administrador,superadmin')->group(function () {
         // Visitas Aprobadas
         Route::get('/admin/visits/approved', [VisitManagementController::class, 'approvedVisits'])
             ->name('admin.visits.approved');
@@ -141,10 +141,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{roomId}', [App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{roomId}/message', [App\Http\Controllers\ChatController::class, 'sendMessage'])->name('chat.send-message');
     Route::get('/chat/{roomId}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('chat.get-messages');
+    Route::put('/chat/{roomId}/message/{messageId}', [App\Http\Controllers\ChatController::class, 'editMessage'])->name('chat.edit-message');
+    Route::delete('/chat/{roomId}/message/{messageId}', [App\Http\Controllers\ChatController::class, 'deleteMessage'])->name('chat.delete-message');
     Route::post('/chat/{roomId}/close', [App\Http\Controllers\ChatController::class, 'close'])->name('chat.close');
     Route::post('/chat/{roomId}/resolve', [App\Http\Controllers\ChatController::class, 'resolve'])->name('chat.resolve');
+    Route::delete('/chat/{roomId}', [App\Http\Controllers\ChatController::class, 'destroy'])->name('chat.destroy');
     Route::post('/chat/online-status', [App\Http\Controllers\ChatController::class, 'updateOnlineStatus'])->name('chat.online-status');
     
     // Estadísticas de chat (solo para administradores)
     Route::get('/chat/statistics', [App\Http\Controllers\ChatController::class, 'statistics'])->name('chat.statistics');
+    
+    // Notificaciones de chat en tiempo real
+    Route::get('/chat/notifications', [App\Http\Controllers\ChatController::class, 'getNotifications'])->name('chat.notifications');
 });

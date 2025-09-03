@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function visitor()
     {
         $user = Auth::user();
-        $visits = $user->visits()->latest()->take(5)->get();
+        $visits = $user->visits()->orderBy('id', 'asc')->take(5)->get();
         
         return view('dashboard.visitor', compact('user', 'visits'));
     }
@@ -27,7 +27,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $assignedVisits = $user->assignedVisits()
             ->where('status', 'approved')
-            ->latest()
+            ->orderBy('id', 'asc')
             ->take(10)
             ->get();
         
@@ -41,11 +41,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $pendingVisits = \App\Models\Visit::where('status', 'pending')
-            ->latest()
+            ->orderBy('id', 'asc')
             ->take(10)
             ->get();
         
-        $recentVisits = \App\Models\Visit::latest()
+        $recentVisits = \App\Models\Visit::orderBy('id', 'asc')
             ->take(10)
             ->get();
         

@@ -2,195 +2,203 @@
 
 @section('title', 'Registro - Sistema de Visitas')
 
+@section('subtitle', 'Crea tu cuenta de visitante')
+
 @section('content')
-<div class="auth-card">
-    <div class="auth-header">
-        <h4>
-            <i class="fas fa-user-plus me-2"></i>
+<div class="space-y-6">
+    <div>
+        <h3 class="text-lg font-medium leading-6 text-gray-900">
             Registro de Visitante
-        </h4>
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+            Completa la información para crear tu cuenta
+        </p>
     </div>
-    
-    <div class="auth-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-                        
-                        <!-- Información Personal -->
-                        <h5 class="mb-3 text-primary">
-                            <i class="fas fa-user me-2"></i>
-                            Información Personal
-                        </h5>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">
-                                    <i class="fas fa-user me-1"></i>
-                                    Nombre Completo *
-                                </label>
-                                <input type="text" 
-                                       class="form-control @error('name') is-invalid @enderror" 
-                                       id="name" 
-                                       name="name" 
-                                       value="{{ old('name') }}" 
-                                       required>
-                                @error('name')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-envelope me-1"></i>
-                                    Correo Electrónico *
-                                </label>
-                                <input type="email" 
-                                       class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" 
-                                       name="email" 
-                                       value="{{ old('email') }}" 
-                                       required>
-                                @error('email')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">
-                                    <i class="fas fa-phone me-1"></i>
-                                    Teléfono *
-                                </label>
-                                <input type="tel" 
-                                       class="form-control @error('phone') is-invalid @enderror" 
-                                       id="phone" 
-                                       name="phone" 
-                                       value="{{ old('phone') }}" 
-                                       required>
-                                @error('phone')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="institution_type" class="form-label">
-                                    <i class="fas fa-building me-1"></i>
-                                    Tipo de Institución *
-                                </label>
-                                <select class="form-select @error('institution_type') is-invalid @enderror" 
-                                        id="institution_type" 
-                                        name="institution_type" 
-                                        required>
-                                    <option value="">Seleccione...</option>
-                                    <option value="empresa" {{ old('institution_type') == 'empresa' ? 'selected' : '' }}>
-                                        Empresa
-                                    </option>
-                                    <option value="universidad" {{ old('institution_type') == 'universidad' ? 'selected' : '' }}>
-                                        Universidad
-                                    </option>
-                                    <option value="colegio" {{ old('institution_type') == 'colegio' ? 'selected' : '' }}>
-                                        Colegio
-                                    </option>
-                                    <option value="otro" {{ old('institution_type') == 'otro' ? 'selected' : '' }}>
-                                        Otro
-                                    </option>
-                                </select>
-                                @error('institution_type')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="institution_name" class="form-label">
-                                <i class="fas fa-university me-1"></i>
-                                Nombre de la Institución *
-                            </label>
-                            <input type="text" 
-                                   class="form-control @error('institution_name') is-invalid @enderror" 
-                                   id="institution_name" 
-                                   name="institution_name" 
-                                   value="{{ old('institution_name') }}" 
-                                   required>
-                            @error('institution_name')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        
-                        <!-- Información de Seguridad -->
-                        <h5 class="mb-3 text-primary mt-4">
-                            <i class="fas fa-shield-alt me-2"></i>
-                            Información de Seguridad
-                        </h5>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">
-                                    <i class="fas fa-lock me-1"></i>
-                                    Contraseña *
-                                </label>
-                                <input type="password" 
-                                       class="form-control @error('password') is-invalid @enderror" 
-                                       id="password" 
-                                       name="password" 
-                                       required>
-                                @error('password')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                                <small class="form-text text-muted">
-                                    Mínimo 8 caracteres
-                                </small>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="password_confirmation" class="form-label">
-                                    <i class="fas fa-lock me-1"></i>
-                                    Confirmar Contraseña *
-                                </label>
-                                <input type="password" 
-                                       class="form-control" 
-                                       id="password_confirmation" 
-                                       name="password_confirmation" 
-                                       required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" 
-                                   class="form-check-input" 
-                                   id="terms" 
-                                   name="terms" 
-                                   required>
-                            <label class="form-check-label" for="terms">
-                                Acepto los <a href="#" class="text-decoration-none">términos y condiciones</a> *
-                            </label>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-plus me-2"></i>
-                                Crear Cuenta
-                            </button>
-                        </div>
-                    </form>
+
+    <form class="space-y-6" method="POST" action="{{ route('register') }}">
+        @csrf
+        
+        <!-- Información Personal -->
+        <div>
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <svg class="mr-2 h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Información Personal
+            </h4>
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="name" class="form-label">
+                        Nombre Completo *
+                    </label>
+                    <div class="mt-1">
+                        <input id="name" 
+                               name="name" 
+                               type="text" 
+                               autocomplete="name" 
+                               required 
+                               value="{{ old('name') }}"
+                               class="form-input @error('name') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror"
+                               placeholder="Tu nombre completo">
+                    </div>
+                    @error('name')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
                 </div>
-    
-    <div class="auth-footer">
-        <p class="mb-0">
+                
+                <div>
+                    <label for="email" class="form-label">
+                        Correo Electrónico *
+                    </label>
+                    <div class="mt-1">
+                        <input id="email" 
+                               name="email" 
+                               type="email" 
+                               autocomplete="email" 
+                               required 
+                               value="{{ old('email') }}"
+                               class="form-input @error('email') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror"
+                               placeholder="tu@email.com">
+                    </div>
+                    @error('email')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-6">
+                <div>
+                    <label for="phone" class="form-label">
+                        Teléfono *
+                    </label>
+                    <div class="mt-1">
+                        <input id="phone" 
+                               name="phone" 
+                               type="tel" 
+                               autocomplete="tel" 
+                               required 
+                               value="{{ old('phone') }}"
+                               class="form-input @error('phone') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror"
+                               placeholder="+57 300 123 4567">
+                    </div>
+                    @error('phone')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div>
+                    <label for="institution_type" class="form-label">
+                        Tipo de Institución *
+                    </label>
+                    <div class="mt-1">
+                        <select id="institution_type" 
+                                name="institution_type" 
+                                required
+                                class="form-input @error('institution_type') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror">
+                            <option value="">Seleccione...</option>
+                            <option value="empresa" {{ old('institution_type') == 'empresa' ? 'selected' : '' }}>Empresa</option>
+                            <option value="universidad" {{ old('institution_type') == 'universidad' ? 'selected' : '' }}>Universidad</option>
+                            <option value="colegio" {{ old('institution_type') == 'colegio' ? 'selected' : '' }}>Colegio</option>
+                            <option value="otro" {{ old('institution_type') == 'otro' ? 'selected' : '' }}>Otro</option>
+                        </select>
+                    </div>
+                    @error('institution_type')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label for="institution_name" class="form-label">
+                    Nombre de la Institución *
+                </label>
+                <div class="mt-1">
+                    <input id="institution_name" 
+                           name="institution_name" 
+                           type="text" 
+                           required 
+                           value="{{ old('institution_name') }}"
+                           class="form-input @error('institution_name') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror"
+                           placeholder="Nombre de tu institución">
+                </div>
+                @error('institution_name')
+                    <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+        
+        <!-- Información de Seguridad -->
+        <div>
+            <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center">
+                <svg class="mr-2 h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Información de Seguridad
+            </h4>
+            
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="password" class="form-label">
+                        Contraseña *
+                    </label>
+                    <div class="mt-1">
+                        <input id="password" 
+                               name="password" 
+                               type="password" 
+                               autocomplete="new-password" 
+                               required
+                               class="form-input @error('password') border-danger-300 focus:border-danger-500 focus:ring-danger-500 @enderror"
+                               placeholder="••••••••">
+                    </div>
+                    @error('password')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-xs text-gray-500">Mínimo 8 caracteres</p>
+                </div>
+                
+                <div>
+                    <label for="password_confirmation" class="form-label">
+                        Confirmar Contraseña *
+                    </label>
+                    <div class="mt-1">
+                        <input id="password_confirmation" 
+                               name="password_confirmation" 
+                               type="password" 
+                               autocomplete="new-password" 
+                               required
+                               class="form-input"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center">
+            <input id="terms" 
+                   name="terms" 
+                   type="checkbox" 
+                   required
+                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+            <label for="terms" class="ml-2 block text-sm text-gray-900">
+                Acepto los <a href="#" class="font-medium text-primary-600 hover:text-primary-500">términos y condiciones</a> *
+            </label>
+        </div>
+        
+        <div>
+            <button type="submit" class="btn-primary w-full">
+                <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Crear Cuenta
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center">
+        <p class="text-sm text-gray-600">
             ¿Ya tienes una cuenta? 
-            <a href="{{ route('login') }}">
+            <a href="{{ route('login') }}" class="font-medium text-primary-600 hover:text-primary-500">
                 Inicia sesión aquí
             </a>
         </p>
@@ -198,18 +206,28 @@
 </div>
 
 <!-- Información adicional -->
-<div class="text-center mt-4">
-    <div class="alert alert-info">
-        <h6 class="alert-heading">
-            <i class="fas fa-info-circle me-2"></i>
-            ¿Por qué registrarse?
-        </h6>
-        <ul class="mb-0 text-start">
-            <li>Solicita visitas a la institución de forma fácil y rápida</li>
-            <li>Recibe notificaciones sobre el estado de tus solicitudes</li>
-            <li>Accede al historial completo de tus visitas</li>
-            <li>Comunícate directamente con los administradores</li>
-        </ul>
+<div class="mt-8">
+    <div class="bg-primary-50 border border-primary-200 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-primary-800">
+                    ¿Por qué registrarse?
+                </h3>
+                <div class="mt-2 text-sm text-primary-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Solicita visitas a la institución de forma fácil y rápida</li>
+                        <li>Recibe notificaciones sobre el estado de tus solicitudes</li>
+                        <li>Accede al historial completo de tus visitas</li>
+                        <li>Comunícate directamente con los administradores</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

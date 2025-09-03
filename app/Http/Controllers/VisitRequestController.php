@@ -148,7 +148,7 @@ class VisitRequestController extends Controller
     {
         $visits = Auth::user()->visits()
             ->with(['activities', 'logs'])
-            ->latest()
+            ->orderBy('id', 'asc')
             ->paginate(10);
 
         return view('visits.my-requests', compact('visits'));

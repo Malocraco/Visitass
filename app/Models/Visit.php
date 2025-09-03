@@ -40,6 +40,10 @@ class Visit extends Model
         'restaurant_service',
         'restaurant_participants',
         'restaurant_notes',
+        'postponed_at',
+        'postponed_by',
+        'postponement_reason',
+        'suggested_date',
     ];
 
     protected $casts = [
@@ -50,6 +54,8 @@ class Visit extends Model
         'confirmed_start_time' => 'datetime:H:i',
         'confirmed_end_time' => 'datetime:H:i',
         'approved_at' => 'datetime',
+        'postponed_at' => 'datetime',
+        'suggested_date' => 'date',
         'restaurant_service' => 'boolean',
         'restaurant_participants' => 'integer',
         'expected_participants' => 'integer',
@@ -77,6 +83,14 @@ class Visit extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Get the admin that postponed this visit.
+     */
+    public function postponedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'postponed_by');
     }
 
     /**

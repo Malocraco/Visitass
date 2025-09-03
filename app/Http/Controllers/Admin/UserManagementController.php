@@ -43,8 +43,8 @@ class UserManagementController extends Controller
         }
         
         // Ordenamiento
-        $sortBy = $request->get('sort_by', 'created_at');
-        $sortOrder = $request->get('sort_order', 'desc');
+        $sortBy = $request->get('sort_by', 'id');
+        $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
         
         $users = $query->paginate(15)->withQueryString();

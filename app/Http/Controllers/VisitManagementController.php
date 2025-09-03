@@ -19,7 +19,7 @@ class VisitManagementController extends Controller
     {
         $pendingVisits = Visit::with(['user', 'activities'])
             ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'asc')
             ->paginate(10);
 
         return view('admin.visits.pending', compact('pendingVisits'));
@@ -31,7 +31,7 @@ class VisitManagementController extends Controller
     public function allVisits()
     {
         $visits = Visit::with(['user', 'activities'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'asc')
             ->paginate(15);
 
         $stats = [
@@ -247,25 +247,87 @@ class VisitManagementController extends Controller
     }
 
     /**
-     * Rechazar una visita
+     * Posponer una visita
      */
-    public function rejectVisit(Request $request, $id)
+    public function postponeVisit(Request $request, $id)
     {
         $visit = Visit::findOrFail($id);
         
         $request->validate([
-            'rejection_reason' => 'required|string|max:500'
+            'postponement_reason' => 'required|string|max:500',
+            'suggested_date' => 'nullable|date|after:today'
         ]);
 
         $visit->update([
-            'status' => 'rejected',
-            'rejected_at' => Carbon::now(),
-            'rejected_by' => auth()->id(),
-            'rejection_reason' => $request->rejection_reason,
+            'status' => 'postponed',
+            'postponed_at' => Carbon::now(),
+            'postponed_by' => auth()->id(),
+            'postponement_reason' => $request->postponement_reason,
+            'suggested_date' => $request->suggested_date,
             'admin_notes' => $request->input('admin_notes', '')
         ]);
 
-        return redirect()->back()->with('success', 'Visita rechazada exitosamente.');
+        // Crear chat privado automático con el visitante
+        $this->createPostponementChat($visit, $request);
+
+        return redirect()->back()->with('success', 'Visita pospuesta exitosamente. Se ha creado un chat privado con el visitante para coordinar la reagendación.');
+    }
+
+    /**
+     * Crear chat privado automático cuando se pospone una visita
+     */
+    private function createPostponementChat(Visit $visit, Request $request)
+    {
+        // Verificar si ya existe un chat para esta visita
+        $existingChat = \App\Models\ChatRoom::where('visitor_id', $visit->user_id)
+            ->where('subject', 'LIKE', '%Visita #' . $visit->id . '%')
+            ->first();
+
+        if ($existingChat) {
+            // Si ya existe, enviar mensaje al chat existente
+            $this->sendPostponementMessage($existingChat, $visit, $request);
+        } else {
+            // Crear nuevo chat privado
+            $chatRoom = \App\Models\ChatRoom::create([
+                'room_id' => \App\Models\ChatRoom::generateRoomId(),
+                'visitor_id' => $visit->user_id,
+                'admin_id' => auth()->id(),
+                'subject' => 'Reagendación de Visita #' . $visit->id,
+                'status' => 'active',
+                'last_message_at' => now(),
+            ]);
+
+            // Enviar mensaje inicial de posponimiento
+            $this->sendPostponementMessage($chatRoom, $visit, $request);
+        }
+    }
+
+    /**
+     * Enviar mensaje de posponimiento al chat
+     */
+    private function sendPostponementMessage(\App\Models\ChatRoom $chatRoom, Visit $visit, Request $request)
+    {
+        $admin = auth()->user();
+        $suggestedDateText = $request->suggested_date ? 
+            "Fecha sugerida: " . Carbon::parse($request->suggested_date)->format('d/m/Y') : 
+            "Por favor, contacta con nosotros para coordinar una nueva fecha.";
+
+        $message = "Hola {$visit->user->name},\n\n" .
+                  "Te informamos que tu visita programada para el " . $visit->preferred_date->format('d/m/Y') . " ha sido pospuesta.\n\n" .
+                  "**Motivo:** {$request->postponement_reason}\n\n" .
+                  "{$suggestedDateText}\n\n" .
+                  "Por favor, responde a este mensaje para coordinar una nueva fecha que sea conveniente para ambas partes.\n\n" .
+                  "Saludos,\n" .
+                  "Equipo de Administración";
+
+        $chatRoom->messages()->create([
+            'sender_id' => $admin->id,
+            'sender_type' => 'admin',
+            'message' => $message,
+        ]);
+
+        // Actualizar timestamp del último mensaje
+        $chatRoom->update(['last_message_at' => now()]);
     }
 
     /**
@@ -290,7 +352,7 @@ class VisitManagementController extends Controller
      */
     public function visitDetails($id)
     {
-        $visit = Visit::with(['user', 'activities', 'attendees'])
+        $visit = Visit::with(['user', 'activities', 'attendees', 'logs'])
             ->findOrFail($id);
 
         return view('admin.visits.details', compact('visit'));

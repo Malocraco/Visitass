@@ -213,8 +213,7 @@ function confirmDelete(roleId, roleName) {
         document.getElementById('delete-form-' + roleId).submit();
     };
     
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+    document.getElementById('deleteModal').classList.remove('hidden');
 }
 </script>
 @endpush

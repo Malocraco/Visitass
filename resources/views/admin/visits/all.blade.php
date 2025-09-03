@@ -3,246 +3,236 @@
 @section('title', 'Todas las Visitas - Sistema de Visitas')
 
 @section('content')
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">
-        <i class="fas fa-tasks text-primary me-2"></i>
-        Todas las Visitas
-    </h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-                <i class="fas fa-print me-1"></i>Imprimir
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Todas las Visitas
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Gestiona todas las visitas del sistema
+            </p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
+            <button type="button" onclick="window.print()" class="btn-outline">
+                <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Imprimir
             </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-download me-1"></i>Exportar
+            <button type="button" class="btn-outline">
+                <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Exportar
             </button>
         </div>
     </div>
-</div>
 
-<!-- Estadísticas -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ $stats['total'] }}</h4>
-                        <p class="mb-0">Total Visitas</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-chart-line fa-2x"></i>
-                    </div>
-                </div>
+    
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                </svg>
+                <h3 class="text-lg font-semibold text-gray-900">Filtros</h3>
             </div>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
+        
+        <!-- Contenido -->
+        <div class="px-6 py-5">
+            <form method="GET" action="{{ route('admin.visits.all') }}" class="space-y-6">
+                <!-- Primera fila de filtros -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        <h4 class="mb-0">{{ $stats['pending'] }}</h4>
-                        <p class="mb-0">Pendientes</p>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                        <div class="relative">
+                            <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                                <option value="">Todos los estados</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pendiente</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Aprobada</option>
+                                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completada</option>
+                                <option value="postponed" {{ request('status') == 'postponed' ? 'selected' : '' }}>Pospuesta</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-clock fa-2x"></i>
+                    
+                    <div>
+                        <label for="date_from" class="block text-sm font-medium text-gray-700 mb-2">Fecha Desde</label>
+                        <div class="relative">
+                            <input type="date" id="date_from" name="date_from" value="{{ request('date_from') }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">Fecha Hasta</label>
+                        <div class="relative">
+                            <input type="date" id="date_to" name="date_to" value="{{ request('date_to') }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+                        <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Nombre, email, institución..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400">
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ $stats['approved'] }}</h4>
-                        <p class="mb-0">Aprobadas</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-check-circle fa-2x"></i>
-                    </div>
+                
+                <!-- Botones de acción -->
+                <div class="flex items-center space-x-3">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Filtrar
+                    </button>
+                    <a href="{{ route('admin.visits.all') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Limpiar
+                    </a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ $stats['completed'] }}</h4>
-                        <p class="mb-0">Completadas</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-flag-checkered fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filtros -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros
-        </h5>
-    </div>
-    <div class="card-body">
-        <form method="GET" action="{{ route('admin.visits.all') }}" class="row g-3">
-            <div class="col-md-3">
-                <label for="status" class="form-label">Estado</label>
-                <select class="form-select" id="status" name="status">
-                    <option value="">Todos los estados</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pendiente</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Aprobada</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completada</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rechazada</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="date_from" class="form-label">Fecha Desde</label>
-                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request('date_from') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="date_to" class="form-label">Fecha Hasta</label>
-                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request('date_to') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="search" class="form-label">Buscar</label>
-                <input type="text" class="form-control" id="search" name="search" value="{{ request('search') }}" placeholder="Nombre, email, institución...">
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search me-1"></i>Filtrar
-                </button>
-                <a href="{{ route('admin.visits.all') }}" class="btn btn-secondary">
-                    <i class="fas fa-times me-1"></i>Limpiar
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Tabla de Visitas -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">
-            <i class="fas fa-list me-2"></i>Lista de Visitas
-        </h5>
-    </div>
-    <div class="card-body">
-        @if($visits->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
+    <!-- Tabla de Visitas -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="text-lg font-medium text-gray-900">
+                <svg class="inline-block mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Lista de Visitas
+            </h3>
+        </div>
+        <div class="card-body">
+            @if($visits->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-800">
                         <tr>
-                            <th>ID</th>
-                            <th>Visitante</th>
-                            <th>Institución</th>
-                            <th>Fecha Visita</th>
-                            <th>Estado</th>
-                            <th>Actividades</th>
-                            <th>Solicitado</th>
-                            <th>Acciones</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Visitante</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Institución</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha Visita</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actividades</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Solicitado</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($visits as $visit)
-                        <tr>
-                            <td>
-                                <strong>#{{ $visit->id }}</strong>
-                            </td>
-                            <td>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $visit->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                    <strong>{{ $visit->user->name }}</strong><br>
-                                    <small class="text-muted">{{ $visit->user->email }}</small>
+                                    <div class="text-sm font-medium text-gray-900">{{ $visit->user->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $visit->user->email }}</div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                    <strong>{{ $visit->user->institution_name }}</strong><br>
-                                    <small class="text-muted">{{ ucfirst($visit->user->institution_type) }}</small>
+                                    <div class="text-sm font-medium text-gray-900">{{ $visit->user->institution_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ ucfirst($visit->user->institution_type) }}</div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                    <i class="fas fa-calendar me-1"></i>{{ $visit->preferred_date->format('d/m/Y') }}<br>
-                                    <small class="text-muted">{{ $visit->preferred_start_time->format('H:i') }} - {{ $visit->preferred_end_time->format('H:i') }}</small>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <svg class="inline-block mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        {{ $visit->preferred_date->format('d/m/Y') }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ $visit->preferred_start_time->format('H:i') }} - {{ $visit->preferred_end_time->format('H:i') }}
+                                    </div>
                                 </div>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @switch($visit->status)
                                     @case('pending')
-                                        <span class="badge bg-warning text-dark">
-                                            <i class="fas fa-clock me-1"></i>Pendiente
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Pendiente
                                         </span>
                                         @break
                                     @case('approved')
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check me-1"></i>Aprobada
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Aprobada
                                         </span>
                                         @break
                                     @case('completed')
-                                        <span class="badge bg-info">
-                                            <i class="fas fa-flag-checkered me-1"></i>Completada
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                            </svg>
+                                            Completada
                                         </span>
                                         @break
-                                    @case('rejected')
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-times me-1"></i>Rechazada
+                                    @case('postponed')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Pospuesta
                                         </span>
                                         @break
                                 @endswitch
                             </td>
-                            <td>
-                                @foreach($visit->activities->take(2) as $activity)
-                                    <span class="badge bg-secondary me-1">{{ $activity->name }}</span>
-                                @endforeach
-                                @if($visit->activities->count() > 2)
-                                    <span class="badge bg-secondary">+{{ $visit->activities->count() - 2 }}</span>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($visit->activities->take(2) as $activity)
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ $activity->name }}
+                                        </span>
+                                    @endforeach
+                                    @if($visit->activities->count() > 2)
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            +{{ $visit->activities->count() - 2 }}
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
-                            <td>
-                                <small class="text-muted">{{ $visit->created_at->format('d/m/Y H:i') }}</small>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $visit->created_at->format('d/m/Y H:i') }}
                             </td>
-                            <td>
-                                <div class="btn-group" role="group">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex justify-center">
                                     <a href="{{ route('admin.visits.details', $visit->id) }}" 
-                                       class="btn btn-sm btn-outline-primary" 
+                                       class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors duration-200" 
                                        title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
                                     </a>
-                                    
-                                    @if($visit->status == 'pending')
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-success" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#approveModal{{ $visit->id }}"
-                                                title="Aprobar">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-danger" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#rejectModal{{ $visit->id }}"
-                                                title="Rechazar">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    @endif
-                                    
-                                    @if($visit->status == 'approved')
-                                        <button type="button" 
-                                                class="btn btn-sm btn-outline-info" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#completeModal{{ $visit->id }}"
-                                                title="Marcar como completada">
-                                            <i class="fas fa-flag-checkered"></i>
-                                        </button>
-                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -252,128 +242,19 @@
             </div>
             
             <!-- Paginación -->
-            <div class="d-flex justify-content-center mt-4">
+            <div class="flex justify-center mt-6">
                 {{ $visits->links() }}
             </div>
-        @else
-            <div class="text-center py-5">
-                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
-                <h3 class="text-muted">No hay visitas</h3>
-                <p class="text-muted">No se encontraron visitas con los filtros aplicados.</p>
+            @else
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No hay visitas</h3>
+                <p class="mt-1 text-sm text-gray-500">No se encontraron visitas con los filtros aplicados.</p>
             </div>
-        @endif
+            @endif
+        </div>
     </div>
 </div>
-
-<!-- Modales para acciones -->
-@foreach($visits as $visit)
-    @if($visit->status == 'pending')
-        <!-- Modal Aprobar -->
-        <div class="modal fade" id="approveModal{{ $visit->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-check me-2"></i>Aprobar Visita #{{ $visit->id }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('admin.visits.approve', $visit->id) }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <p><strong>¿Estás seguro de que deseas aprobar esta visita?</strong></p>
-                            <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                            <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
-                            
-                            <div class="mb-3">
-                                <label for="admin_notes" class="form-label">Notas del Administrador (opcional):</label>
-                                <textarea class="form-control" id="admin_notes" name="admin_notes" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check me-1"></i>Aprobar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Modal Rechazar -->
-        <div class="modal fade" id="rejectModal{{ $visit->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-times me-2"></i>Rechazar Visita #{{ $visit->id }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('admin.visits.reject', $visit->id) }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <p><strong>¿Estás seguro de que deseas rechazar esta visita?</strong></p>
-                            <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                            <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
-                            
-                            <div class="mb-3">
-                                <label for="rejection_reason" class="form-label">Motivo del Rechazo: <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="3" required></textarea>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="admin_notes" class="form-label">Notas del Administrador (opcional):</label>
-                                <textarea class="form-control" id="admin_notes" name="admin_notes" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times me-1"></i>Rechazar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    @endif
-    
-    @if($visit->status == 'approved')
-        <!-- Modal Completar -->
-        <div class="modal fade" id="completeModal{{ $visit->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-flag-checkered me-2"></i>Completar Visita #{{ $visit->id }}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('admin.visits.complete', $visit->id) }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <p><strong>¿Estás seguro de que deseas marcar esta visita como completada?</strong></p>
-                            <p><strong>Visitante:</strong> {{ $visit->user->name }}</p>
-                            <p><strong>Fecha:</strong> {{ $visit->preferred_date->format('d/m/Y') }}</p>
-                            
-                            <div class="mb-3">
-                                <label for="completion_notes" class="form-label">Notas de Completado (opcional):</label>
-                                <textarea class="form-control" id="completion_notes" name="completion_notes" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-info">
-                                <i class="fas fa-flag-checkered me-1"></i>Completar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    @endif
-@endforeach
 @endsection
-

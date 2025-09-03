@@ -21,13 +21,13 @@ class ChatController extends Controller
         if ($user->isSuperAdmin() || $user->isAdmin()) {
             // Para administradores: mostrar todas las salas de chat
             $chatRooms = ChatRoom::with(['visitor', 'admin', 'messages'])
-                ->orderBy('last_message_at', 'desc')
+                ->orderBy('id', 'asc')
                 ->paginate(15);
         } else {
             // Para visitantes: mostrar solo sus chats
             $chatRooms = ChatRoom::with(['visitor', 'admin', 'messages'])
                 ->where('visitor_id', $user->id)
-                ->orderBy('last_message_at', 'desc')
+                ->orderBy('id', 'asc')
                 ->paginate(15);
         }
         
@@ -283,5 +283,158 @@ class ChatController extends Controller
         ];
         
         return view('chat.statistics', compact('stats'));
+    }
+
+    /**
+     * Obtener notificaciones de chat en tiempo real
+     */
+    public function getNotifications()
+    {
+        $user = Auth::user();
+        
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            // Para administradores: chats sin asignar y mensajes no leídos
+            $unassignedRooms = ChatRoom::where('admin_id', null)
+                ->where('status', 'open')
+                ->count();
+                
+            $unreadMessages = ChatMessage::whereHas('chatRoom', function($query) use ($user) {
+                $query->where('admin_id', $user->id);
+            })->where('sender_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->count();
+        } else {
+            // Para visitantes: mensajes no leídos en sus chats
+            $unreadMessages = ChatMessage::whereHas('chatRoom', function($query) use ($user) {
+                $query->where('visitor_id', $user->id);
+            })->where('sender_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->count();
+            
+            $unassignedRooms = 0;
+        }
+        
+        return response()->json([
+            'unread_messages' => $unreadMessages,
+            'unassigned_rooms' => $unassignedRooms,
+            'total_notifications' => $unreadMessages + $unassignedRooms
+        ]);
+    }
+
+    /**
+     * Crear chat automático desde el sistema (para posponimientos, etc.)
+     */
+    public function createSystemChat($visitorId, $adminId, $subject, $initialMessage)
+    {
+        $chatRoom = ChatRoom::create([
+            'room_id' => ChatRoom::generateRoomId(),
+            'visitor_id' => $visitorId,
+            'admin_id' => $adminId,
+            'subject' => $subject,
+            'status' => 'active',
+            'last_message_at' => now(),
+        ]);
+
+        // Crear mensaje inicial del sistema
+        $chatRoom->messages()->create([
+            'sender_id' => $adminId,
+            'sender_type' => 'admin',
+            'message' => $initialMessage,
+        ]);
+
+        return $chatRoom;
+    }
+
+    /**
+     * Editar un mensaje
+     */
+    public function editMessage(Request $request, $roomId, $messageId)
+    {
+        $request->validate([
+            'message' => 'required|string|max:1000',
+        ]);
+
+        $chatRoom = ChatRoom::where('room_id', $roomId)->firstOrFail();
+        $user = Auth::user();
+        
+        // Verificar permisos
+        if (!$user->isSuperAdmin() && !$user->isAdmin() && $chatRoom->visitor_id !== $user->id) {
+            return response()->json(['error' => 'No tienes permisos para editar mensajes en este chat.'], 403);
+        }
+
+        $message = $chatRoom->messages()->findOrFail($messageId);
+        
+        // Solo el autor del mensaje puede editarlo
+        if ($message->sender_id !== $user->id) {
+            return response()->json(['error' => 'Solo puedes editar tus propios mensajes.'], 403);
+        }
+
+        // Actualizar el mensaje
+        $message->update([
+            'message' => $request->message,
+            'updated_at' => now(),
+        ]);
+
+        // Cargar las relaciones para la respuesta
+        $message->load('sender');
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'formatted_time' => $message->getFormattedTime(),
+        ]);
+    }
+
+    /**
+     * Eliminar un mensaje
+     */
+    public function deleteMessage($roomId, $messageId)
+    {
+        $chatRoom = ChatRoom::where('room_id', $roomId)->firstOrFail();
+        $user = Auth::user();
+        
+        // Verificar permisos
+        if (!$user->isSuperAdmin() && !$user->isAdmin() && $chatRoom->visitor_id !== $user->id) {
+            return response()->json(['error' => 'No tienes permisos para eliminar mensajes en este chat.'], 403);
+        }
+
+        $message = $chatRoom->messages()->findOrFail($messageId);
+        
+        // Solo el autor del mensaje puede eliminarlo
+        if ($message->sender_id !== $user->id) {
+            return response()->json(['error' => 'Solo puedes eliminar tus propios mensajes.'], 403);
+        }
+
+        // Eliminar el mensaje
+        $message->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mensaje eliminado exitosamente.',
+        ]);
+    }
+
+    /**
+     * Eliminar un chat completo (solo superadministradores)
+     */
+    public function destroy($roomId)
+    {
+        $chatRoom = ChatRoom::where('room_id', $roomId)->firstOrFail();
+        $user = Auth::user();
+        
+        // Solo superadministradores pueden eliminar chats
+        if (!$user->isSuperAdmin()) {
+            return redirect()->route('chat.index')
+                ->with('error', 'Solo los superadministradores pueden eliminar chats.');
+        }
+
+        // Eliminar todos los mensajes del chat
+        $chatRoom->messages()->delete();
+        
+        // Eliminar el chat
+        $chatRoom->delete();
+
+        return redirect()->route('chat.index')
+            ->with('success', 'Chat eliminado exitosamente.');
     }
 }

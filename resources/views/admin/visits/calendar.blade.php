@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         viewDetailsBtn.href = `/admin/visits/${visit.id}/details`;
         
-        const modal = new bootstrap.Modal(document.getElementById('visitModal'));
+        document.getElementById('visitModal').classList.remove('hidden');
         modal.show();
     }
     
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         viewDetailsBtn.style.display = 'none';
         
-        const modal = new bootstrap.Modal(document.getElementById('visitModal'));
+        document.getElementById('visitModal').classList.remove('hidden');
         modal.show();
     }
     
